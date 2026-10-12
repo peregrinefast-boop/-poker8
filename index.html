@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>8MAX HOLD’EM</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="theme-color" content="#07110d" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="8MAX HOLD’EM" />
+<style>
+:root{--bg:#07110d;--panel:#101820;--felt:#0b6a48;--felt2:#06452f;--rim:#4a2d18;--gold:#d9ad55;--text:#f5f7fa;--muted:#9ca8b5;--danger:#b84444;--ok:#2b9166;--raise:#936b27;--allin:#873e75;--blue:#2a6e9e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior:none}
+body{min-height:100dvh;overflow-x:hidden;background:radial-gradient(circle at 50% 0,#162a22 0,#07110d 52%)}
+button,input{font:inherit}
+button{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.app{min-height:100dvh;display:flex;flex-direction:column;max-width:720px;margin:0 auto}
+.topbar{height:48px;display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;padding:6px 10px;background:#08100dcc;border-bottom:1px solid #213028;position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);padding-top:max(6px,env(safe-area-inset-top))}
+.brand{font-weight:900;font-size:14px;white-space:nowrap}.brand span{color:#e4bd69}.stats{display:flex;justify-content:flex-end;gap:9px;font-size:11px;color:var(--muted);white-space:nowrap}.stats b{color:#fff;font-size:12px}
+.game{position:relative;flex:1;min-height:0;padding:6px 6px 0}
+.table-wrap{position:relative;height:clamp(470px,61dvh,640px);min-height:470px}
+.table{position:absolute;inset:5.5% 1.5% 8%;border-radius:48% / 42%;background:radial-gradient(ellipse at 50% 43%,#11805a 0,var(--felt) 45%,var(--felt2) 100%);border:7px solid var(--rim);box-shadow:inset 0 0 0 2px var(--gold),inset 0 0 40px #0005,0 12px 30px #0009}
+.center{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:64%;text-align:center;z-index:2;pointer-events:none}.street{font-size:10px;font-weight:800;letter-spacing:.18em;color:#d4eadf;margin-bottom:2px}.pot{font-size:14px;font-weight:900;margin-bottom:6px;text-shadow:0 2px 5px #000}.board{display:flex;justify-content:center;gap:4px;min-height:64px}
+.card{width:clamp(39px,10vw,50px);height:clamp(56px,14.5vw,72px);border-radius:6px;background:#fff;color:#111;display:flex;flex-direction:column;justify-content:space-between;padding:4px;border:1px solid #ddd;box-shadow:0 3px 8px #0008;font-weight:900;line-height:1}.card.red{color:#d12f3e}.card.back{background:repeating-linear-gradient(45deg,#183d75,#183d75 6px,#285494 6px,#285494 12px);border:2px solid #eef2f5;color:transparent}.card .rank{font-size:15px}.card .suit{font-size:20px;align-self:flex-end}.small-card{width:31px;height:44px;padding:3px;border-radius:5px}.small-card .rank{font-size:11px}.small-card .suit{font-size:14px}
+.seat{position:absolute;width:92px;min-height:76px;background:#0d151ce8;border:1.5px solid #43525d;border-radius:11px;padding:5px;box-shadow:0 4px 11px #0008;z-index:3;transition:.15s}.seat.active-turn{border-color:#f2c14e;box-shadow:0 0 0 2px #f2c14e55,0 5px 16px #0009;transform:scale(1.045)}.seat.folded{opacity:.42}.seat.busted{opacity:.25;filter:grayscale(1)}.seat.hero{width:112px;min-height:86px;background:#16232deF;border-color:#70b7ff}.name{font-weight:900;font-size:10px;display:flex;justify-content:space-between;gap:3px;white-space:nowrap}.name span:first-child{overflow:hidden;text-overflow:ellipsis}.chips{color:#69dca8;font-size:10px;margin-top:1px}.bet{color:#ffd56f;font-size:9px;min-height:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cards{display:flex;gap:3px;margin-top:3px}.badge{display:inline-block;font-size:8px;border-radius:999px;padding:1px 4px;background:#3a4652;color:#fff}.dealer{background:#fff;color:#111}.sb{background:#6a5acd}.bb{background:#b24b44}.allin{background:#b47b16}.winner{background:#277a53}
+.s0{left:50%;bottom:0;transform:translateX(-50%)}.s1{left:2%;bottom:9%}.s2{left:0;top:39%}.s3{left:5%;top:5%}.s4{left:50%;top:0;transform:translateX(-50%)}.s5{right:5%;top:5%}.s6{right:0;top:39%}.s7{right:2%;bottom:9%}
+.action-panel{position:sticky;bottom:0;z-index:30;background:linear-gradient(180deg,#111a22f5,#0b1218 55%);border-top:1px solid #2b3740;padding:8px 8px max(8px,env(safe-area-inset-bottom));box-shadow:0 -10px 28px #0008}.status{min-height:42px;padding:0 2px 6px}.msg{font-weight:900;font-size:14px;line-height:1.25}.submsg{font-size:11px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.buttons{display:grid;grid-template-columns:1fr 1.55fr 1fr;gap:6px}.buttons button{border:0;border-radius:10px;min-height:48px;padding:8px 5px;color:#fff;font-weight:900;font-size:12px;box-shadow:inset 0 1px 0 #ffffff12}.buttons button:active:not(:disabled){transform:scale(.97);filter:brightness(1.15)}.buttons button:disabled{opacity:.34}.danger{background:var(--danger)}.primary{background:var(--ok);font-size:13px!important}.raise{background:var(--raise)}.allinbtn{background:var(--allin)}.newhand{background:var(--blue);grid-column:1/-1;font-size:14px!important}.hidden-during-hand{display:none!important}
+.extra{padding:5px 8px 10px;background:#0b1218}.history{border:1px solid #26323a;border-radius:9px;background:#0c141a;overflow:hidden}.history summary{font-size:11px;color:#bac4cd;padding:8px 9px;cursor:pointer}.log{max-height:150px;overflow:auto;font-size:10px;color:#cbd4dd;padding:0 8px 8px}.log div{padding:2px 0;border-bottom:1px solid #ffffff08}.hint{font-size:10px;color:#788591;margin-top:6px;text-align:center}
+@media(max-width:380px){.seat{width:84px}.seat.hero{width:104px}.name{font-size:9px}.small-card{width:29px;height:42px}.table-wrap{height:58dvh}.stats{gap:5px;font-size:10px}.brand{font-size:13px}}
+@media(min-width:560px){.table-wrap{height:650px}.seat{width:112px;min-height:88px}.seat.hero{width:128px}.small-card{width:36px;height:50px}.name{font-size:11px}.chips{font-size:11px}.bet{font-size:10px}.center{width:55%}.buttons button{font-size:13px}}
+@media(orientation:landscape) and (max-height:560px){.topbar{height:40px}.game{padding:2px 10px 0}.table-wrap{height:68dvh;min-height:330px}.table{inset:2% 7% 5%}.seat{width:90px;min-height:67px;padding:4px}.seat.hero{width:105px;min-height:72px}.small-card{width:27px;height:38px}.center{width:48%}.card{width:37px;height:52px}.action-panel{padding:5px 10px max(5px,env(safe-area-inset-bottom))}.status{min-height:31px;padding-bottom:3px}.msg{font-size:12px}.submsg{font-size:9px}.buttons button{min-height:39px}.extra{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span>♠</span> 8MAX HOLD’EM</div>
+    <div class="stats"><span>YOU <b id="heroChips">10,000</b></span><span>#<b id="handNo">0</b></span><span>50/100</span></div>
+  </header>
+
+  <main class="game">
+    <div class="table-wrap">
+      <div class="table"></div>
+      <div class="center">
+        <div class="street" id="street">READY</div>
+        <div class="pot">POT <span id="pot">0</span></div>
+        <div class="board" id="board"></div>
+      </div>
+      <div id="seats">
+        <div class="seat s0 hero"><div class="name"><span>あなた</span><span>YOU</span></div><div class="chips">10,000 chips</div><div class="bet">準備中</div></div>
+        <div class="seat s1"><div class="name"><span>AI・レオ</span><span>TAG</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s2"><div class="name"><span>AI・ミナ</span><span>LAG</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s3"><div class="name"><span>AI・ガク</span><span>ROCK</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s4"><div class="name"><span>AI・サラ</span><span>CALL</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s5"><div class="name"><span>AI・ユウ</span><span>BLUFF</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s6"><div class="name"><span>AI・レン</span><span>BAL</span></div><div class="chips">10,000 chips</div></div>
+        <div class="seat s7"><div class="name"><span>AI・カイ</span><span>TAG</span></div><div class="chips">10,000 chips</div></div>
+      </div>
+    </div>
+  </main>
+
+  <section class="action-panel">
+    <div class="status">
+      <div class="msg" id="message">「次のハンド」で開始</div>
+      <div class="submsg" id="submessage">あなたは画面下の席です。</div>
+    </div>
+    <div class="buttons">
+      <button class="danger" id="foldBtn">FOLD</button>
+      <button class="primary" id="callBtn">CHECK / CALL</button>
+      <button class="allinbtn" id="allinBtn">ALL-IN</button>
+      <button class="raise" id="raise2Btn">RAISE +2BB</button>
+      <button class="raise" id="raise3Btn">RAISE +3BB</button>
+      <button class="newhand" id="newHandBtn">次のハンド</button>
+    </div>
+  </section>
+
+  <div class="extra">
+    <details class="history"><summary>ハンド履歴を見る</summary><div class="log" id="log"></div></details>
+    <div class="hint">Safariで開いて「ホーム画面に追加」するとアプリ風に使えます。</div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const SB=50, BB=100, START=10000;
+const SUITS=['♠','♥','♦','♣'];
+const RANKS=[2,3,4,5,6,7,8,9,10,11,12,13,14];
+const rankText=r=>({11:'J',12:'Q',13:'K',14:'A'})[r]||String(r);
+const aiProfiles=[
+  {name:'AI・レオ',type:'TAG',aggr:.64,loose:.35,bluff:.08},
+  {name:'AI・ミナ',type:'LAG',aggr:.78,loose:.68,bluff:.19},
+  {name:'AI・ガク',type:'ROCK',aggr:.42,loose:.18,bluff:.03},
+  {name:'AI・サラ',type:'CALL',aggr:.31,loose:.62,bluff:.05},
+  {name:'AI・ユウ',type:'BLUFF',aggr:.72,loose:.55,bluff:.26},
+  {name:'AI・レン',type:'BAL',aggr:.58,loose:.48,bluff:.10},
+  {name:'AI・カイ',type:'TAG',aggr:.62,loose:.32,bluff:.07},
+];
+let players=[];
+let deck=[],board=[],dealer=-1,handNo=0,street='ready',currentBet=0,minRaise=BB,actor=-1,acted=new Set(),busy=false,handActive=false,lastWinners=[];
+
+function initPlayers(){
+ players=[{name:'あなた',type:'HUMAN',chips:START,human:true},...aiProfiles.map(x=>({...x,chips:START,human:false}))];
+ players.forEach(resetForHand);
+ render(); setControls(false);
+}
+function resetForHand(p){p.hole=[];p.folded=false;p.allin=false;p.bet=0;p.total=0;p.busted=p.chips<=0;p.position='';p.lastAction='';}
+function freshDeck(){let d=[];for(const s of SUITS)for(const r of RANKS)d.push({r,s});for(let i=d.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
+function nextEligible(from,pred=p=>!p.busted){for(let k=1;k<=players.length;k++){let i=(from+k)%players.length;if(pred(players[i]))return i;}return -1;}
+function activeCount(){return players.filter(p=>!p.busted).length}
+function livePlayers(){return players.filter(p=>!p.busted&&!p.folded)}
+function actionablePlayers(){return players.filter(p=>!p.busted&&!p.folded&&!p.allin)}
+function postBlind(i,amt,label){let p=players[i],pay=Math.min(amt,p.chips);p.chips-=pay;p.bet+=pay;p.total+=pay;if(p.chips===0)p.allin=true;p.position=label;log(`${p.name} ${label} ${pay}`)}
+function startHand(){
+ if(busy||handActive)return;
+ if(activeCount()<2){document.getElementById('message').textContent=players[0].chips>0?'あなたの勝利！ 全AIを飛ばしました。':'ゲーム終了';return;}
+ handNo++; lastWinners=[]; board=[]; deck=freshDeck(); street='preflop'; currentBet=0; minRaise=BB; acted=new Set(); handActive=true;
+ players.forEach(resetForHand);
+ dealer=nextEligible(dealer);
+ const active=activeCount();
+ let sb,bb;
+ if(active===2){sb=dealer;bb=nextEligible(sb);}else{sb=nextEligible(dealer);bb=nextEligible(sb);}
+ players[dealer].position='D'; postBlind(sb,SB,'SB'); postBlind(bb,BB,'BB');
+ for(let n=0;n<2;n++)for(let k=1;k<=players.length;k++){let i=(dealer+k)%players.length;if(!players[i].busted)players[i].hole.push(deck.pop());}
+ currentBet=Math.max(...players.map(p=>p.bet));
+ actor= active===2 ? dealer : nextEligible(bb,p=>!p.busted&&!p.folded&&!p.allin);
+ log(`--- Hand #${handNo} ---`); render(); runTurn();
+}
+function streetName(){return {preflop:'PREFLOP',flop:'FLOP',turn:'TURN',river:'RIVER',showdown:'SHOWDOWN',ready:'READY'}[street]}
+function burn(){deck.pop()}
+function advanceStreet(){
+ if(livePlayers().length<=1)return awardUncontested();
+ if(street==='river')return showdown();
+ players.forEach(p=>p.bet=0);currentBet=0;minRaise=BB;acted=new Set();
+ if(street==='preflop'){burn();board.push(deck.pop(),deck.pop(),deck.pop());street='flop';}
+ else if(street==='flop'){burn();board.push(deck.pop());street='turn';}
+ else if(street==='turn'){burn();board.push(deck.pop());street='river';}
+ actor=nextEligible(dealer,p=>!p.busted&&!p.folded&&!p.allin);
+ log(`-- ${streetName()} --`);render();
+ if(actionablePlayers().length<=1){setTimeout(advanceStreet,500);return;}
+ runTurn();
+}
+function bettingRoundDone(){
+ const a=actionablePlayers();
+ if(a.length===0)return true;
+ return a.every(p=>p.bet===currentBet && acted.has(players.indexOf(p)));
+}
+function runTurn(){
+ render();
+ if(!handActive)return;
+ if(livePlayers().length<=1){awardUncontested();return;}
+ if(bettingRoundDone()){setControls(false);setTimeout(advanceStreet,450);return;}
+ if(actor<0||players[actor].busted||players[actor].folded||players[actor].allin){actor=nextEligible(actor,p=>!p.busted&&!p.folded&&!p.allin);setTimeout(runTurn,100);return;}
+ const p=players[actor];
+ if(p.human){busy=false;setControls(true);let need=Math.max(0,currentBet-p.bet);document.getElementById('callBtn').textContent=need?`CALL ${Math.min(need,p.chips).toLocaleString()}`:'CHECK';message(need?`あなたの番：コール ${need.toLocaleString()}`:'あなたの番：チェック可能',`所持 ${p.chips.toLocaleString()} / 現在ベット ${p.bet.toLocaleString()}`);}
+ else{busy=true;setControls(false);message(`${p.name} が考えています…`,`${p.type} タイプ`);setTimeout(()=>aiAct(actor),420+Math.random()*520);}
+}
+function nextActor(){actor=nextEligible(actor,p=>!p.busted&&!p.folded&&!p.allin);runTurn();}
+function commitCall(i){let p=players[i],need=Math.max(0,currentBet-p.bet),pay=Math.min(need,p.chips);p.chips-=pay;p.bet+=pay;p.total+=pay;if(p.chips===0)p.allin=true;acted.add(i);p.lastAction=need?`CALL ${pay}`:'CHECK';log(`${p.name}: ${p.lastAction}`);render();nextActor();}
+function doFold(i){let p=players[i];p.folded=true;acted.add(i);p.lastAction='FOLD';log(`${p.name}: FOLD`);render();if(livePlayers().length===1)awardUncontested();else nextActor();}
+function doRaise(i,raiseBy,forceAllin=false){
+ let p=players[i],old=currentBet,target=forceAllin?p.bet+p.chips:currentBet+raiseBy;
+ target=Math.min(target,p.bet+p.chips);
+ if(target<=old){commitCall(i);return;}
+ let pay=target-p.bet;p.chips-=pay;p.bet=target;p.total+=pay;if(p.chips===0)p.allin=true;
+ const actualRaise=target-old; if(actualRaise>=minRaise)minRaise=actualRaise; currentBet=target;acted=new Set([i]);p.lastAction=`RAISE ${target}${p.allin?' ALL-IN':''}`;log(`${p.name}: ${p.lastAction}`);render();nextActor();
+}
+function heroAction(kind){if(!handActive||actor!==0||busy)return;if(navigator.vibrate)navigator.vibrate(20);setControls(false);busy=true;if(kind==='fold')doFold(0);else if(kind==='call')commitCall(0);else if(kind==='r2')doRaise(0,BB*2);else if(kind==='r3')doRaise(0,BB*3);else if(kind==='allin')doRaise(0,0,true);}
+
+function preflopStrength(h){
+ if(h.length<2)return .3;let [a,b]=h.slice().sort((x,y)=>y.r-x.r),score=0;
+ if(a.r===b.r)score=.52+(a.r-2)/12*.45;else{score=(a.r+b.r-4)/24*.42;if(a.r>=11)score+=.16;if(b.r>=10)score+=.08;if(a.s===b.s)score+=.06;let gap=a.r-b.r;if(gap<=1)score+=.07;else if(gap>=4)score-=.05;}
+ return Math.max(.05,Math.min(.98,score));
+}
+function handStrength(p){if(board.length>=3){let ev=bestHand([...p.hole,...board]);return Math.min(.99,.18+ev.cat*.105+((ev.tiebreak[0]||2)-2)/12*.07)}return preflopStrength(p.hole)}
+function aiAct(i){
+ if(!handActive||actor!==i)return;let p=players[i];let s=handStrength(p);let need=Math.max(0,currentBet-p.bet);let pot=getPot();let potOdds=need/(pot+need||1);let r=Math.random();
+ let pressure=need/Math.max(1,p.chips+need);let continueThreshold=.27+(1-(p.loose??.5))*.18+potOdds*.25+pressure*.12;
+ let bluff=(p.bluff||.05)>Math.random();
+ if(need>0 && s<continueThreshold && !bluff){doFold(i);return;}
+ let aggr=p.aggr??.55;let canRaise=p.chips>need+BB;let raiseChance=(s>.73?.72:s>.58?.38:.08)*aggr + (bluff?.13:0);
+ if(canRaise && r<raiseChance){let sizes=[BB*2,BB*3,BB*4];let raise=sizes[Math.floor(Math.random()*sizes.length)];if(s>.9&&Math.random()<.18){doRaise(i,0,true)}else doRaise(i,raise);return;}
+ commitCall(i);
+}
+function getPot(){return players.reduce((a,p)=>a+p.total,0)}
+function awardUncontested(){
+ if(!handActive)return;let w=livePlayers()[0];let pot=getPot();w.chips+=pot;lastWinners=[players.indexOf(w)];w.lastAction=`WIN +${pot}`;log(`${w.name} が ${pot} 獲得（全員フォールド）`);finishHand(`${w.name} の勝利 +${pot}`);
+}
+function buildSidePots(){
+ const contrib=players.map((p,i)=>({i,amt:p.total})).filter(x=>x.amt>0);let levels=[...new Set(contrib.map(x=>x.amt))].sort((a,b)=>a-b),prev=0,pots=[];
+ for(const lv of levels){let involved=contrib.filter(x=>x.amt>=lv);let amount=(lv-prev)*involved.length;let eligible=involved.map(x=>x.i).filter(i=>!players[i].folded);if(amount>0)pots.push({amount,eligible});prev=lv;}return pots;
+}
+function showdown(){
+ street='showdown';let pots=buildSidePots();lastWinners=[];let detail=[];
+ for(const pot of pots){let evals=pot.eligible.map(i=>({i,e:bestHand([...players[i].hole,...board])}));evals.sort((a,b)=>compareEval(b.e,a.e));let best=evals[0].e;let wins=evals.filter(x=>compareEval(x.e,best)===0).map(x=>x.i);let share=Math.floor(pot.amount/wins.length),rem=pot.amount-share*wins.length;wins.forEach((i,k)=>{players[i].chips+=share+(k<rem?1:0);lastWinners.push(i)});detail.push(`${wins.map(i=>players[i].name).join(' / ')} ${share}${wins.length>1?'ずつ':''} (${handName(best)})`);}
+ lastWinners=[...new Set(lastWinners)];lastWinners.forEach(i=>players[i].lastAction='WIN');log(`SHOWDOWN: ${detail.join(' | ')}`);finishHand(detail.join(' / '));
+}
+function finishHand(text){handActive=false;busy=false;players.forEach(p=>{if(p.chips<=0)p.busted=true});render(true);setControls(false);document.getElementById('callBtn').textContent='CHECK / CALL';message(text,'「次のハンド」で続行');document.getElementById('newHandBtn').disabled=false;}
+
+function bestHand(cards){let best=null,n=cards.length;for(let a=0;a<n-4;a++)for(let b=a+1;b<n-3;b++)for(let c=b+1;c<n-2;c++)for(let d=c+1;d<n-1;d++)for(let e=d+1;e<n;e++){let v=eval5([cards[a],cards[b],cards[c],cards[d],cards[e]]);if(!best||compareEval(v,best)>0)best=v;}return best;}
+function eval5(cs){
+ let rs=cs.map(c=>c.r).sort((a,b)=>b-a),flush=cs.every(c=>c.s===cs[0].s);let uniq=[...new Set(rs)];if(uniq[0]===14)uniq.push(1);let sh=0;for(let i=0;i<=uniq.length-5;i++){if(uniq[i]-uniq[i+4]===4){sh=uniq[i];break;}}
+ let cnt={};rs.forEach(r=>cnt[r]=(cnt[r]||0)+1);let groups=Object.entries(cnt).map(([r,c])=>({r:+r,c})).sort((a,b)=>b.c-a.c||b.r-a.r);
+ if(flush&&sh)return {cat:8,tiebreak:[sh]};
+ if(groups[0].c===4)return {cat:7,tiebreak:[groups[0].r,...groups.filter(g=>g.c===1).map(g=>g.r)]};
+ if(groups[0].c===3&&groups[1].c===2)return {cat:6,tiebreak:[groups[0].r,groups[1].r]};
+ if(flush)return {cat:5,tiebreak:rs};
+ if(sh)return {cat:4,tiebreak:[sh]};
+ if(groups[0].c===3)return {cat:3,tiebreak:[groups[0].r,...groups.filter(g=>g.c===1).map(g=>g.r).sort((a,b)=>b-a)]};
+ let pairs=groups.filter(g=>g.c===2).sort((a,b)=>b.r-a.r);if(pairs.length>=2){let kick=groups.filter(g=>g.c===1).sort((a,b)=>b.r-a.r)[0]?.r||0;return {cat:2,tiebreak:[pairs[0].r,pairs[1].r,kick]};}
+ if(pairs.length===1)return {cat:1,tiebreak:[pairs[0].r,...groups.filter(g=>g.c===1).map(g=>g.r).sort((a,b)=>b-a)]};
+ return {cat:0,tiebreak:rs};
+}
+function compareEval(a,b){if(a.cat!==b.cat)return a.cat-b.cat;for(let i=0;i<Math.max(a.tiebreak.length,b.tiebreak.length);i++){let x=a.tiebreak[i]||0,y=b.tiebreak[i]||0;if(x!==y)return x-y;}return 0;}
+function handName(e){return ['ハイカード','ワンペア','ツーペア','スリーカード','ストレート','フラッシュ','フルハウス','フォーカード','ストレートフラッシュ'][e.cat]}
+
+function cardHTML(c,small=false,hidden=false){if(hidden)return `<div class="card ${small?'small-card ':''}back"></div>`;let red=c.s==='♥'||c.s==='♦';return `<div class="card ${small?'small-card ':''}${red?'red':''}"><span class="rank">${rankText(c.r)}</span><span class="suit">${c.s}</span></div>`}
+function render(showdownReveal=false){
+ document.getElementById('heroChips').textContent=(players[0]?.chips||0).toLocaleString();document.getElementById('handNo').textContent=handNo;document.getElementById('pot').textContent=getPot().toLocaleString();document.getElementById('street').textContent=streetName();document.getElementById('board').innerHTML=board.map(c=>cardHTML(c)).join('');
+ let s='';players.forEach((p,i)=>{let cls=`seat s${i}${i===0?' hero':''}${p.folded?' folded':''}${p.busted?' busted':''}${handActive&&actor===i?' active-turn':''}`;let badges=[];if(p.position)badges.push(`<span class="badge ${p.position.toLowerCase()}">${p.position}</span>`);if(p.allin)badges.push('<span class="badge allin">ALL-IN</span>');if(lastWinners.includes(i))badges.push('<span class="badge winner">WIN</span>');let reveal=p.human||showdownReveal||street==='showdown';let cards=p.hole.length?p.hole.map(c=>cardHTML(c,true,!reveal)).join(''):'';s+=`<div class="${cls}"><div class="name"><span>${p.name}</span><span>${p.human?'YOU':p.type}</span></div><div class="chips">${p.chips.toLocaleString()} chips</div><div class="bet">${p.bet?`bet ${p.bet.toLocaleString()}`:''} ${p.lastAction||''}</div><div>${badges.join(' ')}</div><div class="cards">${cards}</div></div>`});document.getElementById('seats').innerHTML=s;
+}
+function setControls(on){['foldBtn','callBtn','raise2Btn','raise3Btn','allinBtn'].forEach(id=>document.getElementById(id).disabled=!on);document.getElementById('newHandBtn').disabled=handActive;}
+function message(a,b=''){document.getElementById('message').textContent=a;document.getElementById('submessage').textContent=b;}
+function log(t){let el=document.getElementById('log');let d=document.createElement('div');d.textContent=t;el.prepend(d);}
+
+document.getElementById('foldBtn').onclick=()=>heroAction('fold');document.getElementById('callBtn').onclick=()=>heroAction('call');document.getElementById('raise2Btn').onclick=()=>heroAction('r2');document.getElementById('raise3Btn').onclick=()=>heroAction('r3');document.getElementById('allinBtn').onclick=()=>heroAction('allin');document.getElementById('newHandBtn').onclick=startHand;
+initPlayers();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
